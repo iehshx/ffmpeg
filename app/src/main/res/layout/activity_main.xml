@@ -7,11 +7,31 @@
     tools:context=".MainActivity">
 
     <Button
+        android:id="@+id/prepare"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="getInfo"
-        android:text="GetInfo"
+        android:onClick="prepare"
+        android:text="准备炸鸡"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="play"
+        android:text="播放炸鸡"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/prepare" />
+
+    <ProgressBar
+        android:id="@+id/pb_process"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:max="100"
+        app:layout_constraintTop_toBottomOf="@id/play"
+        tools:progress="10" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

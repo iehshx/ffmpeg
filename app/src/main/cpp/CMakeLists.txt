@@ -6,9 +6,21 @@ project("myapplication")
 
 #set(jnilibs "${CMAKE_SOURCE_DIR}/jniLibs/${CMAKE_ANDROID_ARCH_ABI}/libswresample.so}")
 #message("include = ${jnilibs}")
-include_directories(${CMAKE_SOURCE_DIR}/include)
+include_directories(
+        ${CMAKE_SOURCE_DIR}/include
+        ${CMAKE_SOURCE_DIR}/decoder
+        ${CMAKE_SOURCE_DIR}/render
+        ${CMAKE_SOURCE_DIR}/player
+)
 #link_libraries(${CMAKE_SOURCE_DIR}/jniLibs/)
 
+
+file(GLOB SRC
+        ${CMAKE_SOURCE_DIR}/*.cpp
+        ${CMAKE_SOURCE_DIR}/decoder/*.cpp
+        ${CMAKE_SOURCE_DIR}/render/*.cpp
+        ${CMAKE_SOURCE_DIR}/player/*.cpp
+        )
 
 add_library( # Sets the name of the library.
         myapplication
@@ -17,12 +29,13 @@ add_library( # Sets the name of the library.
         SHARED
 
         # Provides a relative path to your source file(s).
-        native-lib.cpp)
+        ${SRC}
+        ${DECODER_SRC}
+        )
 
 
 find_library( # Sets the name of the path variable.
         log-lib
-
         # Specifies the name of the NDK library that
         # you want CMake to locate.
         log)
@@ -63,6 +76,8 @@ set_target_properties(swscale PROPERTIES IMPORTED_LOCATION ${CMAKE_SOURCE_DIR}/j
 
 target_link_libraries( # Specifies the target library.
         myapplication
+        android
+        OpenSLES
         # Links the target library to the log library
         # included in the NDK.
         avcodec
