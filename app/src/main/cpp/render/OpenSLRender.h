@@ -46,24 +46,23 @@ private:
     /**
      * opensles
      */
-    SLObjectItf engineObject = nullptr;
-    SLEngineItf engineEngine = nullptr;//播放引擎
-    SLObjectItf outputMixObject = nullptr;//混音器
-    SLEnvironmentalReverbItf outputMixEnvironmentalReverb = nullptr;
-    SLEnvironmentalReverbSettings reverbSettings = SL_I3DL2_ENVIRONMENT_PRESET_STONECORRIDOR;
+    SLObjectItf mEngineObj = nullptr;
+    SLEngineItf mEngineEngine = nullptr;//播放引擎
+    SLObjectItf mOutputMixObj = nullptr;//混音器
+//    SLEnvironmentalReverbItf outputMixEnvironmentalReverb = nullptr;
+//    SLEnvironmentalReverbSettings reverbSettings = SL_I3DL2_ENVIRONMENT_PRESET_STONECORRIDOR;
     //播放器相关资源
-    SLObjectItf bqPlayerObject = nullptr;
-    SLPlayItf bqPlayerPlay;
+    SLObjectItf mAudioPlayerObj = nullptr;
+    SLPlayItf mAudioPlayerPlay;
     SLmilliHertz bqPlayerSampleRate = 0;
-    SLAndroidSimpleBufferQueueItf bqPlayerBufferQueue;
-    SLVolumeItf bqPlayerVolume;
+    SLAndroidSimpleBufferQueueItf mBufferQueue;
+    SLVolumeItf mAudioPlayerVolume;
     SLEffectSendItf bqPlayerEffectSend;
 
     bool createEngine();
+    bool CreateOutputMixer();
 
     bool createPlayer();
-
-    bool checkSlresult(SLresult sLresult);
 
     int GetAudioFrameQueueSize();
 
@@ -80,6 +79,7 @@ private:
     mutex mMutex;
     condition_variable mCond;
     volatile bool mExit = false;
+
 };
 
 

@@ -31,6 +31,7 @@ public:
 
     virtual long GetMediaParams(int paramType);
 
+    virtual void onProcess(float process);
 private :
     AudioDecoder *mAudioDecoder = nullptr;
     AudioRender *mAudioRender = nullptr;
@@ -44,10 +45,12 @@ private :
     //    /**
 //     * jni回调
 //     */
-    jobject audioPlayerCallBackObj = nullptr;
-    jmethodID audioPlayerCallBackOnError = nullptr;
-    jmethodID audioPlayerCallBackOnPrepareSuccess = nullptr;
-    jmethodID audioPlayerCallBackOnPlay = nullptr;
+    jobject mAudioPlayerCallBackObj = nullptr;
+    jmethodID mAudioPlayerCallBackOnError = nullptr;
+    jmethodID mAudioPlayerCallBackOnPrepare = nullptr;
+    jmethodID mAudioPlayerCallBackOnPlayProcess = nullptr;
+
+    void onPrepareProcess();
 };
 
 

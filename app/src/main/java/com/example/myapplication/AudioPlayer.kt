@@ -2,13 +2,14 @@ package com.example.myapplication
 
 import android.util.Log
 
-interface AudioPlayerCallBack {
-    fun onStateChange(code: Int);
-    fun onPrepareSuccess();
-    fun onPlay(current: Int, total: Int)
-}
 
 class AudioPlayer {
+    interface AudioPlayerCallBack {
+        fun onError(code: Int);
+        fun onPrepareSuccess();
+        fun onPlayProcess(current: Float)
+    }
+
     var callback: AudioPlayerCallBack? = null
     var url: String = "";
     private var ptr: Long = 0;
@@ -21,10 +22,12 @@ class AudioPlayer {
     fun prepare() {
         if (!url.isEmpty()) {
             ptr = nativeInit(url)
+            nPrepare(ptr, url)
         } else {
             Log.e("tag", "please set url first!");
         }
     }
+
 
     fun play() {
         if (ptr != 0L) {
@@ -38,10 +41,25 @@ class AudioPlayer {
         nStop(ptr);
     }
 
-    external fun nativeInit(url: String): Long
-    external fun nStop(ptr: Long);
-    external fun nSeek(ptr: Long);
-    external fun nPause(ptr: Long);
-    external fun nPlay(url: Long);
+
+    fun pause() {
+        nPause(ptr);
+    }
+
+    fun getDuration(): Long {
+        if (ptr != 0L) {
+            return nGetDuration(ptr);
+        } else {
+            return 0L;
+        }
+    }
+
+    private external fun nGetDuration(ptr: Long): Long
+    private external fun nativeInit(url: String): Long
+    private external fun nStop(ptr: Long);
+    private external fun nSeek(ptr: Long);
+    private external fun nPause(ptr: Long);
+    private external fun nPlay(url: Long);
+    private external fun nPrepare(ptr: Long, url: String)
 
 }

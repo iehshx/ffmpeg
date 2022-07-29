@@ -21,6 +21,7 @@ class AudioDecoder : public DecoderBase {
 
     // ACC音频一帧采样数
     static const int ACC_NB_SAMPLES = 1024;
+    static const int MP3_NB_SAMPLES = 1152;
     //输出采样格式16bit PCM
     enum AVSampleFormat AUDIO_SAMPLE_FMT = AV_SAMPLE_FMT_S16;
     //输出采样率

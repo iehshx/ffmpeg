@@ -5,6 +5,7 @@
 #include <OpenSLRender.h>
 #include "AudioPlayer.h"
 
+
 void
 AudioPlayer::Init(JNIEnv *jniEnv, jobject obj, const char *url, int renderType, jobject surface) {
     jniEnv->GetJavaVM(&mJavaVM);
@@ -12,6 +13,34 @@ AudioPlayer::Init(JNIEnv *jniEnv, jobject obj, const char *url, int renderType, 
     mAudioDecoder = new AudioDecoder(url);
     mAudioRender = new OpenSLRender();
     mAudioDecoder->SetAudioRender(mAudioRender);
+    mAudioDecoder->SetMessageCallback(this);
+    jclass audioPlayerCallBack = jniEnv->FindClass(
+            "com/example/myapplication/AudioPlayer$AudioPlayerCallBack");
+    jclass audioPlayer = jniEnv->FindClass(
+            "com/example/myapplication/AudioPlayer");
+    jfieldID callBackFieldId = jniEnv->GetFieldID(audioPlayer, "callback",
+                                                  "Lcom/example/myapplication/AudioPlayer$AudioPlayerCallBack;");
+    mAudioPlayerCallBackObj = jniEnv->NewGlobalRef(
+            jniEnv->GetObjectField(obj, callBackFieldId));
+    if (!mAudioPlayerCallBackOnError) {
+        mAudioPlayerCallBackOnError = jniEnv->GetMethodID(audioPlayerCallBack, "onError",
+                                                          "(I)V");
+    }
+    if (!mAudioPlayerCallBackOnPrepare) {
+        mAudioPlayerCallBackOnPrepare = jniEnv->GetMethodID(audioPlayerCallBack,
+                                                            "onPrepareSuccess",
+                                                            "()V");
+    }
+    if (!mAudioPlayerCallBackOnPlayProcess) {
+        mAudioPlayerCallBackOnPlayProcess = jniEnv->GetMethodID(audioPlayerCallBack,
+                                                                "onPlayProcess",
+                                                                "(F)V");
+    }
+
+
+    onPrepareProcess();
+
+
 }
 
 void AudioPlayer::UnInit() {
@@ -24,13 +53,14 @@ void AudioPlayer::UnInit() {
         mAudioRender = nullptr;
     }
 
-    if (audioPlayerCallBackObj) {
+    if (mAudioPlayerCallBackObj) {
         bool isAttach = false;
         JNIEnv *env = GetJNIEnv(&isAttach);
-        env->DeleteGlobalRef(audioPlayerCallBackObj);
-        audioPlayerCallBackObj = nullptr;
-        audioPlayerCallBackOnPrepareSuccess = nullptr;
-        audioPlayerCallBackOnError = nullptr;
+        env->DeleteGlobalRef(mAudioPlayerCallBackObj);
+        mAudioPlayerCallBackObj = nullptr;
+        mAudioPlayerCallBackOnPrepare = nullptr;
+        mAudioPlayerCallBackOnError = nullptr;
+        mAudioPlayerCallBackOnPlayProcess = nullptr;
     }
 
     bool isAttach = false;
@@ -51,8 +81,9 @@ void AudioPlayer::Pause() {
 }
 
 void AudioPlayer::Stop() {
-    if (mAudioDecoder)
+    if (mAudioDecoder){
         mAudioDecoder->Stop();
+    }
 }
 
 void AudioPlayer::SeekToPosition(float position) {
@@ -61,7 +92,11 @@ void AudioPlayer::SeekToPosition(float position) {
 }
 
 long AudioPlayer::GetMediaParams(int paramType) {
-    return 0;
+    if (paramType == 0) {
+        return mAudioDecoder->GetDuration();
+    } else {
+        return 0;
+    }
 }
 
 JavaVM *AudioPlayer::GetJavaVM() {
@@ -91,3 +126,25 @@ JNIEnv *AudioPlayer::GetJNIEnv(bool *isAttach) {
 jobject AudioPlayer::GetJavaObj() {
     return mJavaObj;
 }
+
+
+void AudioPlayer::onPrepareProcess() {
+    if (mAudioPlayerCallBackOnPrepare) {
+        bool isAttach = false;
+        JNIEnv *env = GetJNIEnv(&isAttach);
+        env->CallVoidMethod(mAudioPlayerCallBackObj, mAudioPlayerCallBackOnPrepare);
+    }
+}
+
+void AudioPlayer::onProcess(float process) {
+    if (mAudioPlayerCallBackOnPlayProcess) {
+        bool isAttach = false;
+        JNIEnv *env = GetJNIEnv(&isAttach);
+        env->CallVoidMethod(mAudioPlayerCallBackObj, mAudioPlayerCallBackOnPlayProcess,
+                            process);
+        if (isAttach){
+            mJavaVM->DetachCurrentThread();
+        }
+    }
+}
+

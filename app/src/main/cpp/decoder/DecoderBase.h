@@ -15,8 +15,16 @@ extern "C" {
 
 #include "Decoder.h"
 #include <thread>
+#include <MediaPlayer.h>
 
 using namespace std;
+
+enum DecoderState {
+    STATE_UNKNOWN,
+    STATE_DECODING,
+    STATE_PAUSE,
+    STATE_STOP
+};
 
 class DecoderBase : public Decoder {
 public:
@@ -37,6 +45,10 @@ public:
     virtual float GetDuration() {
         //ms to s
         return mDuration * 1.0f / 1000;
+    }
+
+    virtual void SetMessageCallback(void *context) {
+        mMsgContext = static_cast<MediaPlayer *>(context);
     }
 
     //seek 到某个时间点播放
@@ -60,6 +72,7 @@ protected:
     AVCodecContext *GetCodecContext() {
         return mAVCodecContext;
     }
+
 
 private:
     int InitFFDecoder();
@@ -103,6 +116,10 @@ private:
     long mDuration = 0;
     int mStreamIndex = -1;
     thread *mThread = nullptr;
+    mutex mMutex;
+    condition_variable mCond;
+    MediaPlayer *mMsgContext;
+    volatile int mDecoderState = STATE_UNKNOWN;
 };
 
 

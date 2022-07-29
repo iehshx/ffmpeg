@@ -1,9 +1,10 @@
 //
 // Created by DZ0400351 on 2022/7/28.
 //
-
 #ifndef MY_APPLICATION_MEDIAPLAYER_H
 #define MY_APPLICATION_MEDIAPLAYER_H
+
+#include "jni.h"
 
 class MediaPlayer {
 public:
@@ -26,6 +27,8 @@ public:
 
     virtual long GetMediaParams(int paramType) = 0;
 
+    virtual void onProcess(float process) = 0;
+
     virtual void SetMediaParams(int paramType, jobject obj) {}
 
     virtual JNIEnv *GetJNIEnv(bool *isAttach) = 0;
@@ -36,6 +39,7 @@ public:
 
     JavaVM *mJavaVM = nullptr;
     jobject mJavaObj = nullptr;
+
 };
 
 #endif //MY_APPLICATION_MEDIAPLAYER_H

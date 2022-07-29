@@ -8,10 +8,8 @@
 
 extern "C"
 JNIEXPORT jlong JNICALL
-Java_com_example_myapplication_AudioPlayer_nativeInit(JNIEnv *env, jobject thiz, jstring jUrl) {
+Java_com_example_myapplication_AudioPlayer_nativeInit(JNIEnv *env, jobject thiz) {
     AudioPlayer *audioPlayer = new AudioPlayer();
-    const char *url = env->GetStringUTFChars(jUrl, JNI_FALSE);
-    audioPlayer->Init(env, thiz, url, 0, nullptr);
     return reinterpret_cast<jlong>(audioPlayer);
 }
 extern "C"
@@ -45,4 +43,24 @@ Java_com_example_myapplication_AudioPlayer_nPlay(JNIEnv *env, jobject thiz, jlon
     if (audioPlayer) {
         audioPlayer->Play();
     }
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_myapplication_AudioPlayer_nPrepare(JNIEnv *env, jobject thiz, jlong ptr,
+                                                    jstring jUrl) {
+    AudioPlayer *audioPlayer = reinterpret_cast<AudioPlayer *>(ptr);
+    if (audioPlayer) {
+        const char *url = env->GetStringUTFChars(jUrl, JNI_FALSE);
+        audioPlayer->Init(env, thiz, url, 0, nullptr);
+        env->ReleaseStringUTFChars(jUrl, url);
+    }
+}
+extern "C"
+JNIEXPORT jlong JNICALL
+Java_com_example_myapplication_AudioPlayer_nGetDuration(JNIEnv *env, jobject thiz, jlong ptr) {
+    AudioPlayer *audioPlayer = reinterpret_cast<AudioPlayer *>(ptr);
+    if (audioPlayer) {
+        return audioPlayer->GetMediaParams(0);
+    }
+    return 0L;
 }
