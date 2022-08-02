@@ -81,7 +81,7 @@ void AudioPlayer::Pause() {
 }
 
 void AudioPlayer::Stop() {
-    if (mAudioDecoder){
+    if (mAudioDecoder) {
         mAudioDecoder->Stop();
     }
 }
@@ -142,9 +142,40 @@ void AudioPlayer::onProcess(float process) {
         JNIEnv *env = GetJNIEnv(&isAttach);
         env->CallVoidMethod(mAudioPlayerCallBackObj, mAudioPlayerCallBackOnPlayProcess,
                             process);
-        if (isAttach){
+        if (isAttach) {
             mJavaVM->DetachCurrentThread();
         }
+    }
+}
+
+AudioPlayer::~AudioPlayer() {
+
+    if (mAudioDecoder) {
+        mAudioDecoder->Stop();
+        delete mAudioDecoder;
+        mAudioDecoder = nullptr;
+    }
+    if (mAudioRender) {
+        mAudioRender->UnInit();
+        delete mAudioRender;
+        mAudioRender = nullptr;
+    }
+    if (mAudioPlayerCallBackObj) {
+        delete mAudioPlayerCallBackObj;
+        mAudioPlayerCallBackObj = nullptr;
+    }
+    if (mAudioPlayerCallBackOnPrepare) {
+        delete mAudioPlayerCallBackOnPrepare;
+        mAudioPlayerCallBackOnPrepare = nullptr;
+    }
+    if (mAudioPlayerCallBackOnError) {
+        delete mAudioPlayerCallBackOnError;
+        mAudioPlayerCallBackOnError = nullptr;
+    }
+
+    if (mAudioPlayerCallBackOnPlayProcess) {
+        delete mAudioPlayerCallBackOnPlayProcess;
+        mAudioPlayerCallBackOnPlayProcess = nullptr;
     }
 }
 

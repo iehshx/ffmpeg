@@ -29,8 +29,16 @@ int DecoderBase::InitFFDecoder() {
             //获取流信息
             for (int i = 0; i < mAVFormatContext->nb_streams; ++i) {
                 if (mAVFormatContext->streams[i]->codecpar->codec_type == mediaType) {
-                    mStreamIndex = i;
-                    break;
+                    if (mediaType == AVMEDIA_TYPE_VIDEO) {
+                        if (mAVFormatContext->streams[i]->codecpar->codec_id ==
+                            AV_CODEC_ID_H264) {
+                            mStreamIndex = i;
+                            break;
+                        }
+                    } else {
+                        mStreamIndex = i;
+                        break;
+                    }
                 }
             }
             if (mStreamIndex == -1) {
@@ -163,11 +171,13 @@ int DecoderBase::DecodeOnePacket() {
                 av_packet_unref(mAvPacket);
                 break;
             }
-            av_packet_unref(mAvPacket);
-            ret = av_read_frame(mAVFormatContext, mAvPacket);
         }
+        av_packet_unref(mAvPacket);
+        ret = av_read_frame(mAVFormatContext, mAvPacket);
     }
-    return ret;
+
+    return
+            ret;
 }
 
 long DecoderBase::AVSync() {

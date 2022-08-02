@@ -1,5 +1,6 @@
 package com.example.myapplication
 
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import androidx.appcompat.app.AppCompatActivity
@@ -206,6 +207,10 @@ class MainActivity : AppCompatActivity() {
 
     fun prepare(view: View) {
         audioPlayer?.prepare();
+    }
+
+    fun video(view: View) {
+        startActivity(Intent(this,VideoActivity::class.java))
     }
 
 }

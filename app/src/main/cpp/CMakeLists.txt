@@ -88,4 +88,5 @@ target_link_libraries( # Specifies the target library.
         postproc
         avfilter
         avdevice
+        z
         ${log-lib})

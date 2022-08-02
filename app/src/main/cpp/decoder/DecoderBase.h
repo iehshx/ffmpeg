@@ -11,6 +11,7 @@ extern "C" {
 #include <../include/libavutil/frame.h>
 #include <../include/libavutil/time.h>
 #include <../include/libavcodec/jni.h>
+#include <../include/libavutil/imgutils.h>
 }
 
 #include "Decoder.h"

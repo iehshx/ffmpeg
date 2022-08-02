@@ -28,11 +28,13 @@ void AudioDecoder::OnDecoderReady() {
                  mNbSamples, mDstFrameDataSze);
             mAudioOutBuffer = (uint8_t *) malloc(mDstFrameDataSze);
             mAudioRender->Init();
+            LOGE("音频解码准备完毕");
         }
     }
 }
 
 void AudioDecoder::OnDecoderDone() {
+    LOGE("音频解码完毕");
     if (mAudioRender)
         mAudioRender->UnInit();
 

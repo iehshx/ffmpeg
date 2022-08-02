@@ -15,9 +15,10 @@ class AudioPlayer : public MediaPlayer {
 public:
     AudioPlayer() {};
 
-    virtual ~AudioPlayer() {};
+    virtual ~AudioPlayer();
 
-    virtual void Init(JNIEnv *jniEnv, jobject obj, const char *url, int renderType, jobject surface);
+    virtual void
+    Init(JNIEnv *jniEnv, jobject obj, const char *url, int renderType, jobject surface);
 
     virtual void UnInit();
 
@@ -32,6 +33,7 @@ public:
     virtual long GetMediaParams(int paramType);
 
     virtual void onProcess(float process);
+
 private :
     AudioDecoder *mAudioDecoder = nullptr;
     AudioRender *mAudioRender = nullptr;
@@ -42,9 +44,6 @@ private :
 
     virtual JNIEnv *GetJNIEnv(bool *isAttach);
 
-    //    /**
-//     * jni回调
-//     */
     jobject mAudioPlayerCallBackObj = nullptr;
     jmethodID mAudioPlayerCallBackOnError = nullptr;
     jmethodID mAudioPlayerCallBackOnPrepare = nullptr;
