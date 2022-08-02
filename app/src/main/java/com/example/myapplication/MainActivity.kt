@@ -68,6 +68,7 @@ class MainActivity : AppCompatActivity() {
                     if (binding.pbProcess.progress + 1 >= binding.pbProcess.max) {
                         binding.play?.setCompoundDrawables(playDrawable, null, null, null);
                         started = false;
+                        binding.next.performClick()
                     }
 
                     binding.tvTime?.text = "${binding.pbProcess.progress}/ ${binding.pbProcess.max}"
