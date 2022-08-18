@@ -37,6 +37,7 @@ void NativeRender::Init(int videoWidth, int videoHeight, int *dstSize) {
 }
 
 void NativeRender::RenderVideoFrame(NativeImage *pImage) {
+    LOGE("NativeRender::RenderVideoFrame pImage=%p", pImage);
     if (mNativeWindow == nullptr || pImage == nullptr) return;
     ANativeWindow_lock(mNativeWindow, &mNativeWindowBuffer, nullptr);
     uint8_t *dstBuffer = static_cast<uint8_t *>(mNativeWindowBuffer.bits);

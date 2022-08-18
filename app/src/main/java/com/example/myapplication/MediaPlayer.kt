@@ -7,22 +7,24 @@ class MediaPlayer {
 
     interface MediaPlayerCallBack {
         fun onPlayProcess(current: Float)
+        fun onRequestRender()
     }
 
     var url: String = "";
     private var ptr: Long = 0;
 
 
-    var callBack:MediaPlayerCallBack? = null
+    var callBack: MediaPlayerCallBack? = null
 
     fun setDataSource(url: String) {
         this.url = url
     }
 
-    fun prepare(surface: Surface) {
+
+    fun prepare(surface: Surface?, renderType: Int) {
         if (!url.isEmpty()) {
             ptr = nativeInit()
-            nPrepare(ptr, url, surface)
+            nPrepare(ptr, url, renderType, surface)
         } else {
             Log.e("tag", "please set url first!");
         }
@@ -55,6 +57,7 @@ class MediaPlayer {
         }
     }
 
+
     private external fun nGetDuration(ptr: Long): Long
     private external fun nativeInit(): Long
     private external fun nStop(ptr: Long);
@@ -62,9 +65,19 @@ class MediaPlayer {
     private external fun nPause(ptr: Long);
     private external fun nPlay(url: Long);
     private external fun nUnInit(url: Long);
-    private external fun nPrepare(ptr: Long, url: String, surface: Surface)
+    private external fun nPrepare(ptr: Long, url: String, renderType: Int, surface: Surface?)
+
+    companion object {
+
+        var VIDEO_RENDER_ANWINDOW = 1
+        var VIDEO_RENDER_OPENGL = 0
+        external fun onSurfaceCreated(renderType: Int, renderStyle: Int)
+        external fun onDrawFrame(renderType: Int)
+    }
+
     fun unInit() {
         nUnInit(ptr)
     }
+
 
 }

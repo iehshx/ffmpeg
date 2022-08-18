@@ -10,6 +10,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,35 +25,57 @@ class MainActivity : AppCompatActivity() {
     private var started: Boolean = false
     private lateinit var binding: ActivityMainBinding
 
-    var current = -1;
-    var audioPlayer: AudioPlayer? = null
+    var mCurrent = -1;
+    var mAudioPlayer: AudioPlayer? = null
 
     var mUrl: String = ""
-    var playDrawable: Drawable? = null
-    var pauseDrawable: Drawable? = null
-    var path = Environment.getExternalStorageDirectory().absolutePath + "/iehshx/";
+    var mPlayDrawable: Drawable? = null
+    var mPauseDrawable: Drawable? = null
+    var mPath = Environment.getExternalStorageDirectory().absolutePath + "/iehshx/";
+
+    var mStyle = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        playDrawable = resources.getDrawable(android.R.drawable.ic_media_play)
-        pauseDrawable = resources.getDrawable(android.R.drawable.ic_media_pause)
+        mPlayDrawable = resources.getDrawable(android.R.drawable.ic_media_play)
+        mPauseDrawable = resources.getDrawable(android.R.drawable.ic_media_pause)
         setContentView(binding.root)
-        audioPlayer = AudioPlayer()
-        audioPlayer?.callback = object : AudioPlayer.AudioPlayerCallBack {
+        binding.spVideoRenderType.adapter = ArrayAdapter.createFromResource(
+            this,
+            R.array.video_types,
+            android.R.layout.simple_spinner_dropdown_item
+        )
+        binding.spVideoRenderType.onItemSelectedListener = object :
+            AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+                mStyle = position
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+                mStyle = 0
+            }
+        }
+        mAudioPlayer = AudioPlayer()
+        mAudioPlayer?.callback = object : AudioPlayer.AudioPlayerCallBack {
 
             override fun onError(code: Int) {
                 Log.e("tag", "code = $code")
             }
 
             override fun onPrepareSuccess() {
-                audioPlayer?.play()
+                mAudioPlayer?.play()
                 started = true;
                 binding.pbProcess?.post {
-                    binding.pbProcess.max = audioPlayer!!.getDuration()!!.toInt()
+                    binding.pbProcess.max = mAudioPlayer!!.getDuration()!!.toInt()
                     Log.e("tag", "准备完毕,max = ${binding.pbProcess.max}")
                     binding.play.setCompoundDrawablesWithIntrinsicBounds(
-                        pauseDrawable,
+                        mPauseDrawable,
                         null,
                         null,
                         null
@@ -67,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                     var process = current.toInt()
                     binding.pbProcess!!.setProgress(process, true);
                     if (binding.pbProcess.progress + 1 >= binding.pbProcess.max) {
-                        binding.play?.setCompoundDrawables(playDrawable, null, null, null);
+                        binding.play?.setCompoundDrawables(mPlayDrawable, null, null, null);
                         started = false;
                         binding.next.performClick()
                     }
@@ -76,58 +100,58 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-        audioPlayer?.setDataSource(path)
+        mAudioPlayer?.setDataSource(mPath)
 
         binding.pre.setOnClickListener {
-            current -= 1;
-            if (current < 0) current = (songList?.size ?: 1) - 1;
+            mCurrent -= 1;
+            if (mCurrent < 0) mCurrent = (songList?.size ?: 1) - 1;
             binding.play.setCompoundDrawablesWithIntrinsicBounds(
-                playDrawable, null, null, null
+                mPlayDrawable, null, null, null
             )
             for (item in songList!!) {
                 item.selected = false;
             }
-            songList?.get(current)?.selected = true
+            songList?.get(mCurrent)?.selected = true
             binding.rvSongList.adapter?.notifyDataSetChanged()
-            audioPlayer?.stop();
-            audioPlayer?.setDataSource(songList?.get(current)?.path ?: "");
-            audioPlayer?.prepare();
+            mAudioPlayer?.stop();
+            mAudioPlayer?.setDataSource(songList?.get(mCurrent)?.path ?: "");
+            mAudioPlayer?.prepare();
         }
         binding.next.setOnClickListener {
-            current += 1;
-            if (current > (songList?.size ?: 1) - 1) current = 0;
+            mCurrent += 1;
+            if (mCurrent > (songList?.size ?: 1) - 1) mCurrent = 0;
             binding.play.setCompoundDrawablesWithIntrinsicBounds(
-                playDrawable, null, null, null
+                mPlayDrawable, null, null, null
             )
             for (item in songList!!) {
                 item.selected = false;
             }
-            songList?.get(current)?.selected = true
+            songList?.get(mCurrent)?.selected = true
             binding.rvSongList.adapter?.notifyDataSetChanged()
-            audioPlayer?.stop();
-            audioPlayer?.setDataSource(songList?.get(current)?.path ?: "");
-            audioPlayer?.prepare();
+            mAudioPlayer?.stop();
+            mAudioPlayer?.setDataSource(songList?.get(mCurrent)?.path ?: "");
+            mAudioPlayer?.prepare();
         }
         binding.play.setOnClickListener {
-            if (!started || audioPlayer?.url != mUrl) {//没有播放 或者修改了歌曲
-                audioPlayer?.stop()
+            if (!started || mAudioPlayer?.url != mUrl) {//没有播放 或者修改了歌曲
+                mAudioPlayer?.stop()
                 binding.play.setCompoundDrawablesWithIntrinsicBounds(
-                    playDrawable, null, null, null
+                    mPlayDrawable, null, null, null
                 )
-                audioPlayer?.setDataSource(mUrl)
-                audioPlayer?.prepare()
+                mAudioPlayer?.setDataSource(mUrl)
+                mAudioPlayer?.prepare()
             } else {
                 if (pause) {
                     binding.play.setCompoundDrawablesWithIntrinsicBounds(
-                        pauseDrawable, null, null, null
+                        mPauseDrawable, null, null, null
                     );
-                    audioPlayer?.play()
+                    mAudioPlayer?.play()
                     pause = false
                 } else {
                     binding.play.setCompoundDrawablesWithIntrinsicBounds(
-                        playDrawable, null, null, null
+                        mPlayDrawable, null, null, null
                     )
-                    audioPlayer?.pause()
+                    mAudioPlayer?.pause()
                     pause = true
                 }
             }
@@ -164,7 +188,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 text = datas[position].path
                 setOnClickListener {
-                    current = position;
+                    mCurrent = position;
                     mUrl = datas[position].path
                     datas.forEach { it.selected = false }
                     datas[position].selected = true
@@ -181,7 +205,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun findSongList(): List<Node> {
         var songList = ArrayList<Node>()
-        var songDir = File(path)
+        var songDir = File(mPath)
         if (songDir.exists()) {
             var files = songDir.listFiles()
             for (file in files) {
@@ -206,10 +230,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun prepare(view: View) {
-        audioPlayer?.prepare();
+        mAudioPlayer?.prepare();
     }
 
     fun video(view: View) {
+//        startActivity(Intent(this, GLVideoActivity::class.java).apply {
+//            putExtra(
+//                "videoRenderStyle",
+//                mStyle
+//            )
+//        })
         startActivity(Intent(this,VideoActivity::class.java))
     }
 

@@ -66,7 +66,14 @@ void VideoDecoder::OnFrameAvailable(AVFrame *frame) {
         image.height = mRenderHeight;
         image.ppPlane[0] = mRGBAFrame->data[0];
         image.pLineSize[0] = image.width * 4;
+//        if (mVideoRender->GetRenderType() == VIDEO_RENDER_ANWINDOW){
+//            image.format = IMAGE_FORMAT_RGBA;
+//        }else{
+        image.format = IMAGE_FORMAT_RGBA;
+//        }
         mVideoRender->RenderVideoFrame(&image);
 
+
+//            m_MsgCallback(m_MsgContext, MSG_REQUEST_RENDER, 0);
     }
 }

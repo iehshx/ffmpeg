@@ -179,3 +179,7 @@ AudioPlayer::~AudioPlayer() {
     }
 }
 
+void AudioPlayer::requestRender() {
+
+}
+

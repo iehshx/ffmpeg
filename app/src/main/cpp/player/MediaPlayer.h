@@ -29,6 +29,9 @@ public:
 
     virtual void onProcess(float process) = 0;
 
+    virtual void requestRender() = 0;
+
+
     virtual void SetMediaParams(int paramType, jobject obj) {}
 
     virtual JNIEnv *GetJNIEnv(bool *isAttach) = 0;

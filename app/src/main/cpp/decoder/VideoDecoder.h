@@ -32,6 +32,7 @@ private:
     SwsContext *mSwsContext = nullptr;
     AVFrame *mRGBAFrame = nullptr;
 
+
     virtual void OnDecoderReady();
 
     virtual void OnDecoderDone();

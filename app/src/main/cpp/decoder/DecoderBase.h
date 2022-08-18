@@ -74,6 +74,10 @@ protected:
         return mAVCodecContext;
     }
 
+    MediaPlayer *getMsgContext() {
+        return mMsgContext;
+    }
+
 
 private:
     int InitFFDecoder();

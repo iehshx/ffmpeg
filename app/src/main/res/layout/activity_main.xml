@@ -72,13 +72,22 @@
         tools:text="10/30" />
 
 
-    <Button
-        android:text="视频"
-        android:onClick="video"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
+    <Spinner
+        android:id="@+id/spVideoRenderType"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="@id/btnVideo"
+        app:layout_constraintEnd_toStartOf="@id/btnVideo"
+        app:layout_constraintTop_toTopOf="@id/btnVideo" />
+
+    <Button
+        android:id="@+id/btnVideo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="video"
+        android:text="视频"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

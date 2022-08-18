@@ -4,6 +4,8 @@ import android.os.Bundle
 import android.os.Environment
 import android.view.SurfaceHolder
 import androidx.appcompat.app.AppCompatActivity
+import com.example.myapplication.MediaPlayer.Companion.VIDEO_RENDER_ANWINDOW
+import com.example.myapplication.MediaPlayer.Companion.VIDEO_RENDER_OPENGL
 import kotlinx.android.synthetic.main.activity_video.*
 
 class VideoActivity : AppCompatActivity() {
@@ -30,8 +32,12 @@ class VideoActivity : AppCompatActivity() {
                     }
                 }
 
+                override fun onRequestRender() {
+                    
+                }
+
             }
-            mMediaPlayer?.prepare(p0.surface)
+            mMediaPlayer?.prepare(p0.surface,VIDEO_RENDER_ANWINDOW)
             mMediaPlayer?.play()
 
         }

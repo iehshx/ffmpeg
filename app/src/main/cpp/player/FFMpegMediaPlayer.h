@@ -35,7 +35,10 @@ public:
 
     virtual long GetMediaParams(int paramType);
 
+
     void onProcess(float process);
+
+    void requestRender();
 
 private:
     virtual JNIEnv *GetJNIEnv(bool *isAttach);
@@ -52,6 +55,7 @@ private:
 
     jobject mMediaPlayerCallBackObj = nullptr;
     jmethodID mMediaPlayerCallBackOnPlayProcess = nullptr;
+    jmethodID mMediaPlayerCallBackRequestRenderProcess = nullptr;
 };
 
 

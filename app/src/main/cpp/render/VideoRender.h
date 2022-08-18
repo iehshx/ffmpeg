@@ -5,6 +5,8 @@
 #ifndef MY_APPLICATION_VIDEORENDER_H
 #define MY_APPLICATION_VIDEORENDER_H
 
+#define VIDEO_RENDER_OPENGL             0
+#define VIDEO_RENDER_ANWINDOW           1
 
 #include "../utils.h"
 

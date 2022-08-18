@@ -2,6 +2,7 @@
 // Created by DZ0400351 on 2022/8/2.
 //
 
+#include <GLRender.h>
 #include "FFMpegMediaPlayer.h"
 
 void
@@ -10,8 +11,13 @@ FFMpegMediaPlayer::Init(JNIEnv *jniEnv, jobject obj, const char *url, int render
     jniEnv->GetJavaVM(&mJavaVM);
     mJavaObj = jniEnv->NewGlobalRef(obj);
     mVideoDecoder = new VideoDecoder(url);
-    mVideoRender = new NativeRender(jniEnv, surface);
-    mVideoDecoder->SetVideoRender(mVideoRender);
+    if (renderType == VIDEO_RENDER_OPENGL) {
+        mVideoDecoder->SetVideoRender(GLRender::GetInstance());
+    } else if (renderType == VIDEO_RENDER_ANWINDOW) {
+        mVideoRender = new NativeRender(jniEnv, surface);
+        mVideoDecoder->SetVideoRender(mVideoRender);
+    }
+
     mAudioDecoder = new AudioDecoder(url);
     mAudioRender = new OpenSLRender();
     mAudioDecoder->SetAudioRender(mAudioRender);
@@ -27,8 +33,14 @@ FFMpegMediaPlayer::Init(JNIEnv *jniEnv, jobject obj, const char *url, int render
     mMediaPlayerCallBackObj = jniEnv->NewGlobalRef(
             jniEnv->GetObjectField(obj, callBackFieldId));
     if (!mMediaPlayerCallBackOnPlayProcess) {
-        mMediaPlayerCallBackOnPlayProcess = jniEnv->GetMethodID(audioPlayerCallBack, "onPlayProcess",
-                                                          "(F)V");
+        mMediaPlayerCallBackOnPlayProcess = jniEnv->GetMethodID(audioPlayerCallBack,
+                                                                "onPlayProcess",
+                                                                "(F)V");
+    }
+    if (!mMediaPlayerCallBackRequestRenderProcess) {
+        mMediaPlayerCallBackRequestRenderProcess = jniEnv->GetMethodID(audioPlayerCallBack,
+                                                                       "onRequestRender",
+                                                                       "()V");
     }
 }
 
@@ -58,6 +70,7 @@ void FFMpegMediaPlayer::UnInit() {
         JNIEnv *env = GetJNIEnv(&isAttach);
         env->DeleteGlobalRef(mMediaPlayerCallBackObj);
         mMediaPlayerCallBackOnPlayProcess = nullptr;
+        mMediaPlayerCallBackRequestRenderProcess = nullptr;
     }
 
     bool isAttach = false;
@@ -136,6 +149,15 @@ void FFMpegMediaPlayer::onProcess(float process) {
         bool isAttach = false;
         JNIEnv *env = GetJNIEnv(&isAttach);
         env->CallVoidMethod(mMediaPlayerCallBackObj, mMediaPlayerCallBackOnPlayProcess, process);
+        GetJavaVM()->DetachCurrentThread();
+    }
+}
+
+void FFMpegMediaPlayer::requestRender() {
+    if (mMediaPlayerCallBackObj) {
+        bool isAttach = false;
+        JNIEnv *env = GetJNIEnv(&isAttach);
+        env->CallVoidMethod(mMediaPlayerCallBackObj, mMediaPlayerCallBackRequestRenderProcess);
         GetJavaVM()->DetachCurrentThread();
     }
 }

@@ -1,5 +1,6 @@
 #include <jni.h>
 #include <FFMpegMediaPlayer.h>
+#include "GLRender.h"
 
 //
 // Created by DZ0400351 on 2022/7/28.
@@ -49,11 +50,12 @@ Java_com_example_myapplication_MediaPlayer_nPlay(JNIEnv *env, jobject thiz, jlon
 extern "C"
 JNIEXPORT void JNICALL
 Java_com_example_myapplication_MediaPlayer_nPrepare(JNIEnv *env, jobject thiz, jlong ptr,
-                                                    jstring jUrl, jobject surface) {
+                                                    jstring jUrl, jint renderType,
+                                                    jobject surface) {
     FFMpegMediaPlayer *ffMpegMediaPlayer = reinterpret_cast<FFMpegMediaPlayer *>(ptr);
     if (ffMpegMediaPlayer) {
         const char *url = env->GetStringUTFChars(jUrl, JNI_FALSE);
-        ffMpegMediaPlayer->Init(env, thiz, url, 0, surface);
+        ffMpegMediaPlayer->Init(env, thiz, url, renderType, surface);
         env->ReleaseStringUTFChars(jUrl, url);
     }
 }
@@ -73,4 +75,27 @@ Java_com_example_myapplication_MediaPlayer_nUnInit(JNIEnv *env, jobject thiz, jl
     if (ffMpegMediaPlayer) {
         ffMpegMediaPlayer->UnInit();
     }
+}
+
+/**
+ * 设置渲染模式
+ */
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_myapplication_MediaPlayer_00024Companion_onSurfaceCreated(JNIEnv *env,
+                                                                           jobject thiz,
+                                                                           jint renderType, jint renderStyle) {
+
+    switch (renderType) {
+        case VIDEO_RENDER_OPENGL:
+            GLRender::GetInstance()->OnSurfaceCreated(renderStyle);
+            break;
+    }
+
+}
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_example_myapplication_MediaPlayer_00024Companion_onDrawFrame(JNIEnv *env, jobject thiz,
+                                                                      jint render_type) {
+    GLRender::GetInstance()->OnDrawFrame();
 }

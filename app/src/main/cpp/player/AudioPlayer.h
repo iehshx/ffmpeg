@@ -34,6 +34,8 @@ public:
 
     virtual void onProcess(float process);
 
+    virtual void requestRender();
+
 private :
     AudioDecoder *mAudioDecoder = nullptr;
     AudioRender *mAudioRender = nullptr;

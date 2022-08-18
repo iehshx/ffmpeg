@@ -8,6 +8,7 @@ project("myapplication")
 #message("include = ${jnilibs}")
 include_directories(
         ${CMAKE_SOURCE_DIR}/include
+        glm
         ${CMAKE_SOURCE_DIR}/decoder
         ${CMAKE_SOURCE_DIR}/render
         ${CMAKE_SOURCE_DIR}/player
@@ -78,6 +79,8 @@ target_link_libraries( # Specifies the target library.
         myapplication
         android
         OpenSLES
+        EGL
+        GLESv3
         # Links the target library to the log library
         # included in the NDK.
         avcodec
@@ -89,4 +92,5 @@ target_link_libraries( # Specifies the target library.
         avfilter
         avdevice
         z
+        m
         ${log-lib})

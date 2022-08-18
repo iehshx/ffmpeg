@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="video_types">
+        <item>normal</item>
+        <item>splite</item>
+        <item>color</item>
+    </string-array>
+</resources>

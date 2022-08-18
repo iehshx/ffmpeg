@@ -164,6 +164,9 @@ int DecoderBase::DecodeOnePacket() {
                 UpdateTimeStamp();
                 AVSync();
                 OnFrameAvailable(mAvFrame);
+                if (getMsgContext() != nullptr) {
+                    getMsgContext()->requestRender();
+                }
                 frameCount++;
             }
             if (frameCount > 0) {
@@ -191,7 +194,6 @@ long DecoderBase::AVSync() {
 //    if(m_MsgContext && m_MsgCallback && m_MediaType == AVMEDIA_TYPE_AUDIO)
 //        m_MsgCallback(m_MsgContext, MSG_DECODING_TIME, m_CurTimeStamp * 1.0f / 1000);
 
-    long delay = 0;
 
     //向系统时钟同步
     if (mCurTimeStamp > elapsedTime) {
@@ -201,7 +203,6 @@ long DecoderBase::AVSync() {
         sleepTime = sleepTime > DELAY_THRESHOLD ? DELAY_THRESHOLD : sleepTime;
         av_usleep(sleepTime * 1000);
     }
-    delay = elapsedTime - mCurTimeStamp;
     return 0;
 }
 
