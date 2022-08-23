@@ -18,17 +18,22 @@ void AudioDecoder::OnDecoderReady() {
                                0, NULL);
             swr_init(mSwrContext);
 
+//            mNbSamples = 1152;
+            //a = 1152  b = 44100 c = 44100
+            //重采样后输出的样本数  = 原本的采样率 * 输出的采样率 / 输入的采样率
+            //转换公式 inCount / inSampleRate = outCount/outSampleRate
+            //outCount = inCount/inSampleRate * outSampleRate
             mNbSamples = (int) av_rescale_rnd(
                     codeCtx->codec_id == AV_CODEC_ID_MP3 ? MP3_NB_SAMPLES : ACC_NB_SAMPLES,
                     AUDIO_DST_SAMPLE_RATE,
                     codeCtx->sample_rate, AV_ROUND_UP);
             mDstFrameDataSze = av_samples_get_buffer_size(NULL, AUDIO_DST_CHANNEL_COUNTS,
                                                           mNbSamples, DST_SAMPLT_FORMAT, 1);
-            LOGE("AudioDecoder::OnDecoderReady [m_nbSamples, m_DstFrameDataSze]=[%d, %d]",
+            LOGE("AudioDecoder::OnDecoderReady [mNbSamples, mDstFrameDataSze]=[%d, %d]",
                  mNbSamples, mDstFrameDataSze);
             mAudioOutBuffer = (uint8_t *) malloc(mDstFrameDataSze);
             mAudioRender->Init();
-            LOGE("音频解码准备完毕");
+            LOGE("AudioDecoder::OnDecoderReady 音频解码准备完毕");
         }
     }
 }
